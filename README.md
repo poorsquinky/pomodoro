@@ -1,8 +1,8 @@
 # pomodoro
 
-Tools and [tmux (https://tmux.github.io/)] integration for the [Pomodoro Technique (http://pomodorotechnique.com/)].  Allows you to put a 25-minute timer in the corner of your tmux sessions.
+Tools and [tmux](https://tmux.github.io/) integration for the [Pomodoro Technique](http://pomodorotechnique.com/).  Allows you to put a 25-minute timer in the corner of your tmux sessions.
 
-Based loosely on [tmux-pomodoro (https://github.com/justincampbell/tmux-pomodoro)]
+Based loosely on [tmux-pomodoro](https://github.com/justincampbell/tmux-pomodoro)
 
 ## Caveats
 
@@ -37,7 +37,7 @@ set -g status-right '`test -e ~/bin/pomodoro && pomodoro status`'
 set -g status-right '#[fg=colour07,bg=colour05] #(printf "%%-3s" `test -e ~/bin/pomodoro && pomodoro status`)'
 ```
 
-* Full disclosure: the status-right that I personally use, with a clock and host load average.  Requires a 256-color terminal and a [powerline (https://github.com/powerline/fonts)] or [nerd (https://github.com/ryanoasis/nerd-fonts)] font:
+* Full disclosure: the status-right that I personally use, with a clock and host load average.  Requires a 256-color terminal and a [powerline](https://github.com/powerline/fonts) or [nerd](https://github.com/ryanoasis/nerd-fonts) font:
 ```tmux
 set -g status-right '#[fg=colour54] #[fg=colour205,bg=colour54] #(printf "%%-3s" `test -e ~/bin/pomodoro && pomodoro status`) #[fg=colour57] #[fg=colour140,bg=colour57] #(uptime | sed -e "s/.*: //" -e "s/,//g") #[fg=colour135]#[fg=colour15,bg=colour135] %m/%d %H:%M '
 ```
@@ -66,7 +66,7 @@ You can configure pomodoro to read its synchronized status via a URL, which is s
 ```bash
 ln -s /tmp/pom_$USER $HOME/public_html/pom
 ```
-* Ensure your web server is configured to follow symbolic links in that location ([hint (https://httpd.apache.org/docs/2.4/mod/core.html#options)])
+* Ensure your web server is configured to follow symbolic links in that location ([hint](https://httpd.apache.org/docs/2.4/mod/core.html#options))
 * Put a similar line to this in your .pomodororc:
 ```bash
 POMODORO_STATUS_URL=http://host.example.com/~user/pom
@@ -80,5 +80,5 @@ In future revisions of this, I would like to see:
 
 * A simple installer
 * A lightweight REST API that can replace SSH synchronization
-* [Docker (https://github.com/docker/docker)] containers for a simple low-mess API installation
+* [Docker](https://github.com/docker/docker) containers for a simple low-mess API installation
 
