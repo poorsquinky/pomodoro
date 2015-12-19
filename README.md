@@ -12,6 +12,8 @@ Here is a lovely screenshot:
 
 `pomodoro` is a very simple and early-stage bash script, written hastily in an ironic act of procrastination.  It could probably use a lot of improvement.
 
+At the moment, your terminal and tmux must both support UTF-8 for this to work properly.
+
 ## Installation
 
 * Clone this repository or download the ZIP and unpack it
@@ -83,6 +85,6 @@ POMODORO_STATUS_URL=http://host.example.com/~user/pom
 In future revisions of this, I would like to see:
 
 * A simple installer
-* A lightweight REST API that can replace SSH synchronization
-* [Docker](https://github.com/docker/docker) containers for a simple low-mess API installation
+* A lightweight REST API that can replace SSH synchronization, plus [Docker](https://github.com/docker/docker) containers for a simple low-mess API installation
+* Better compatibility with non-UTF-8 terminals
 
