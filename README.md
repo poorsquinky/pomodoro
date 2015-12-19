@@ -18,7 +18,7 @@ Based loosely on [tmux-pomodoro](https://github.com/justincampbell/tmux-pomodoro
 Add the status icon to your .tmux.conf.  This example works with tmux configurations that are shared between different hosts that may or may not have pomodoro installed:
 
 ```tmux
-set -g status-right '`test -e ~/bin/pomodoro && pomodoro status`'
+set -g status-right '`test -e /usr/local/bin/pomodoro && pomodoro status`'
 ```
 
 ## Usage
