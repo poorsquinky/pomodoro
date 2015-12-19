@@ -1,0 +1,56 @@
+#!/bin/bash
+
+### Start and run a pomodoro timer for use in tmux status line
+
+POMODORO_STATUS_FILE=/tmp/pom_$USER
+
+test -e "$HOME/.pomodororc" && . "$HOME/.pomodororc"
+
+case $1 in
+    "status")
+        if [ -e $POMODORO_STATUS_FILE ] || ([ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]); then
+            STATUS=$(cat $POMODORO_STATUS_FILE 2>/dev/null)
+
+            if [ -z "$STATUS" ] && [ ! -z "$POMODORO_STATUS_URL" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]; then
+                STATUS=$(curl -s "$POMODORO_STATUS_URL")
+                if echo "$STATUS" | grep -q -E '[^0-9]'; then
+                    STATUS=""
+                fi
+            fi
+
+            if [ -z "$STATUS" ] && [ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]; then
+                ssh -o "ConnectTimeout 2" $POMODORO_SSH bin/pomodoro status 2>/dev/null
+                exit 0
+            elif [ -z "$STATUS" ]; then
+                echo
+            else
+                DELTA=$(( 25 - $(($(( $(date +%s) - $STATUS )) / 60 )) ))
+                if [ $DELTA -gt 0 ]; then
+                    echo "${DELTA}  🍅"
+                else
+                    echo "❗  🍅"   # this line has a unicode nonbreaking space in it for format reasons
+                fi
+            fi
+        else
+            echo
+        fi
+        ;;
+
+    "start")
+        if [ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]; then
+            ssh -o "ConnectTimeout 2" $POMODORO_SSH bin/pomodoro start 2>&1 > /dev/null
+        else
+            date +%s > $POMODORO_STATUS_FILE
+        fi
+        tmux refresh-client -S
+        ;;
+
+    "clear")
+        if [ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]; then
+            ssh -o "ConnectTimeout 2" $POMODORO_SSH bin/pomodoro clear 2>&1 > /dev/null
+        fi
+        rm -f $POMODORO_STATUS_FILE
+        tmux refresh-client -S
+        ;;
+
+esac
