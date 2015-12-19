@@ -4,6 +4,10 @@ Tools and [tmux](https://tmux.github.io/) integration for the [Pomodoro Techniqu
 
 Based loosely on [tmux-pomodoro](https://github.com/justincampbell/tmux-pomodoro)
 
+Here is a lovely screenshot:
+
+![Powerline-ish status-right screenshot](https://cloud.githubusercontent.com/assets/14341469/11915117/0d1da92e-a64d-11e5-9eb3-0371fca50100.png)
+
 ## Caveats
 
 `pomodoro` is a very simple and early-stage bash script, written hastily in an ironic act of procrastination.  It could probably use a lot of improvement.
