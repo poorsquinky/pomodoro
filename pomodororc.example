@@ -7,6 +7,6 @@
 #POMODORO_SSH=server.example.com
 #POMODORO_NOSYNC_NAME=examplehost
 
-# Uncomment for HTTP read-nly synchronization
+# Uncomment for HTTP read-only synchronization
 #POMODORO_STATUS_URL=http://host.example.com/~user/pom
 
