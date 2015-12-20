@@ -1,0 +1,12 @@
+
+# This file gets installed as $HOME/.pomodororc
+# See README.md in the distribution or at
+# https://github.com/poorsquinky/pomodoro for complete instructions
+
+# Uncomment to enable SSH-based synchronization server
+#POMODORO_SSH=server.example.com
+#POMODORO_NOSYNC_NAME=examplehost
+
+# Uncomment for HTTP read-nly synchronization
+#POMODORO_STATUS_URL=http://host.example.com/~user/pom
+

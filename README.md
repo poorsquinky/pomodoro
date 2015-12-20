@@ -77,7 +77,7 @@ ln -s /tmp/pom_$USER $HOME/public_html/pom
 ```bash
 POMODORO_STATUS_URL=http://host.example.com/~user/pom
 ```
-
+* Any client connecting to this URL will need to have [curl](http://curl.haxx.se/) installed.  Ones without it will silently fall-back to trying SSH.
 
 
 ## TODO
