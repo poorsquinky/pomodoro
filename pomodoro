@@ -20,7 +20,11 @@
 # Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA 02110-1301  USA
 
+# Set some defaults
 POMODORO_STATUS_FILE=/tmp/pom_$USER
+POMODORO_BANG="❗"
+POMODORO_SYMBOL="🍅"
+POMODORO_NBSP=" "
 
 test -e "$HOME/.pomodororc" && . "$HOME/.pomodororc"
 
@@ -37,16 +41,16 @@ case $1 in
             fi
 
             if [ -z "$STATUS" ] && [ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]; then
-                ssh -o "ConnectTimeout 2" $POMODORO_SSH bin/pomodoro status 2>/dev/null
+                ssh -q -o "ConnectTimeout 2" $POMODORO_SSH bin/pomodoro status 2>/dev/null
                 exit 0
             elif [ -z "$STATUS" ]; then
                 echo
             else
                 DELTA=$(( 25 - $(($(( $(date +%s) - $STATUS )) / 60 )) ))
                 if [ $DELTA -gt 0 ]; then
-                    echo "${DELTA}  🍅"
+                    echo "${DELTA} ${POMODORO_SYMBOL} "
                 else
-                    echo "❗  🍅"   # this line has a unicode nonbreaking space in it for format reasons
+                    echo "${POMODORO_BANG} ${POMODORO_NBSP} ${POMODORO_SYMBOL}"   # this line has a unicode nonbreaking space in it for format reasons
                 fi
             fi
         else
@@ -56,7 +60,7 @@ case $1 in
 
     "start")
         if [ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]; then
-            ssh -o "ConnectTimeout 2" $POMODORO_SSH bin/pomodoro start 2>&1 > /dev/null
+            ssh -q -o "ConnectTimeout 2" $POMODORO_SSH bin/pomodoro start 2>&1 > /dev/null
         else
             date +%s > $POMODORO_STATUS_FILE
         fi
@@ -65,7 +69,7 @@ case $1 in
 
     "clear")
         if [ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]; then
-            ssh -o "ConnectTimeout 2" $POMODORO_SSH bin/pomodoro clear 2>&1 > /dev/null
+            ssh -q -o "ConnectTimeout 2" $POMODORO_SSH bin/pomodoro clear 2>&1 > /dev/null
         fi
         rm -f $POMODORO_STATUS_FILE
         tmux refresh-client -S

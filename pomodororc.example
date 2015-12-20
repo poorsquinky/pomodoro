@@ -3,10 +3,20 @@
 # See README.md in the distribution or at
 # https://github.com/poorsquinky/pomodoro for complete instructions
 
-# Uncomment to enable SSH-based synchronization server
+# Set the location of the status file
+# POMODORO_STATUS_FILE=/tmp/pom_$USER
+
+# Uncomment these if you have trouble with Unicode
+#POMODORO_BANG="!"
+#POMODORO_SYMBOL="P"
+#POMODORO_NBSP=" "
+
+# Enable SSH-based synchronization server
 #POMODORO_SSH=server.example.com
+
+# If the local hostname is this, don't perform sync
 #POMODORO_NOSYNC_NAME=examplehost
 
-# Uncomment for HTTP read-only synchronization
+# HTTP read-only synchronization
 #POMODORO_STATUS_URL=http://host.example.com/~user/pom
 

@@ -36,6 +36,14 @@ set -g status-right '`test -e /usr/local/bin/pomodoro && pomodoro status`'
 
 ## Optional/Advanced Configuration
 
+### Disable Unicode
+* Add to .pomodororc:
+```bash
+POMODORO_BANG="!"
+POMODORO_SYMBOL="P"
+POMODORO_NBSP=" "
+```
+
 ### Status blocks
 
 * A nice color status block:
@@ -86,5 +94,4 @@ In future revisions of this, I would like to see:
 
 * A simple installer
 * A lightweight REST API that can replace SSH synchronization, plus [Docker](https://github.com/docker/docker) containers for a simple low-mess API installation
-* Better compatibility with non-UTF-8 terminals
 
