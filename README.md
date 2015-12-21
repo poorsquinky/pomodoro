@@ -40,8 +40,8 @@ set -g status-right '`test -e /usr/local/bin/pomodoro && pomodoro status`'
 * (prefix) ctrl-p to start
 * (prefix) meta-p to clear
 ```tmux
-bind-key -T prefix C-p run-shell 'test -e ~/bin/pomodoro && pomodoro start'
-bind-key -T prefix M-p run-shell 'test -e ~/bin/pomodoro && pomodoro clear'
+bind-key -T prefix C-p run-shell 'test -e /usr/local/bin/pomodoro && pomodoro start'
+bind-key -T prefix M-p run-shell 'test -e /usr/local/bin/pomodoro && pomodoro clear'
 ```
 
 ### Disable Unicode
@@ -56,12 +56,12 @@ POMODORO_NBSP=" "
 
 * A nice color status block:
 ```tmux
-set -g status-right '#[fg=colour07,bg=colour05] #(printf "%%-3s" `test -e ~/bin/pomodoro && pomodoro status`)'
+set -g status-right '#[fg=colour07,bg=colour05] #(printf "%%-3s" `test -e /usr/local/bin/pomodoro && pomodoro status`)'
 ```
 
 * Full disclosure: the status-right that I personally use, with a clock and host load average.  Requires a 256-color terminal and a [powerline](https://github.com/powerline/fonts) or [nerd](https://github.com/ryanoasis/nerd-fonts) font:
 ```tmux
-set -g status-right '#[fg=colour54] #[fg=colour205,bg=colour54] #(printf "%%-3s" `test -e ~/bin/pomodoro && pomodoro status`) #[fg=colour57] #[fg=colour140,bg=colour57] #(uptime | sed -e "s/.*: //" -e "s/,//g") #[fg=colour135]#[fg=colour15,bg=colour135] %m/%d %H:%M '
+set -g status-right '#[fg=colour54] #[fg=colour205,bg=colour54] #(printf "%%-3s" `test -e /usr/local/bin/pomodoro && pomodoro status`) #[fg=colour57] #[fg=colour140,bg=colour57] #(uptime | sed -e "s/.*: //" -e "s/,//g") #[fg=colour135]#[fg=colour15,bg=colour135] %m/%d %H:%M '
 ```
 
 ### SSH read/write synchronization
