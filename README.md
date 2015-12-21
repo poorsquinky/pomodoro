@@ -36,6 +36,14 @@ set -g status-right '`test -e /usr/local/bin/pomodoro && pomodoro status`'
 
 ## Optional/Advanced Configuration
 
+### Hotkeys in `.tmux.conf`
+* (prefix) ctrl-p to start
+* (prefix) meta-p to clear
+```tmux
+bind-key -T prefix C-p run-shell 'test -e ~/bin/pomodoro && pomodoro start'
+bind-key -T prefix M-p run-shell 'test -e ~/bin/pomodoro && pomodoro clear'
+```
+
 ### Disable Unicode
 * Add to .pomodororc:
 ```bash
