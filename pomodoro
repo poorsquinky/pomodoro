@@ -34,6 +34,14 @@ POMODORO_GRAPHICAL=0
 
 test -e "$HOME/.pomodororc" && . "$HOME/.pomodororc"
 
+function show_help () {
+echo "Usage: $0 [options] start|status|clear
+
+Options:
+    -h --help       Display this message
+"
+}
+
 function number_as_blocks () {
     NUM=$1
     IDX=$(( $(( NUM * ${#POMODORO_GRAPH_BLOCKS[@]} )) / POMODORO_MINUTES ))
@@ -46,7 +54,27 @@ function number_as_blocks () {
     echo -n ${POMODORO_GRAPH_BLOCKS[$IDX]}
 }
 
-case $1 in
+NONOPT_ARGS=()
+# I'm not in love with getopt or getopts right now, so we have this:
+while [ $# -gt 0 ]; do
+    ARG=$1
+    shift
+    case "$ARG" in
+        -h|--help)
+            show_help
+            exit 0
+        ;;
+        *)
+            NONOPT_ARGS+=("$ARG")
+            ;;
+    esac
+
+done
+
+
+
+ARG=${NONOPT_ARGS[0]}
+case "$ARG" in
     "status")
         if [ -e $POMODORO_STATUS_FILE ] || ([ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]); then
             STATUS=$(cat $POMODORO_STATUS_FILE 2>/dev/null)
@@ -79,6 +107,7 @@ case $1 in
         else
             echo
         fi
+        exit 0
         ;;
 
     "start")
@@ -88,6 +117,7 @@ case $1 in
             date +%s > $POMODORO_STATUS_FILE
         fi
         tmux refresh-client -S
+        exit 0
         ;;
 
     "clear")
@@ -96,6 +126,13 @@ case $1 in
         fi
         rm -f $POMODORO_STATUS_FILE
         tmux refresh-client -S
+        exit 0
+        ;;
+
+    *)
+        echo "Command not recognized: $ARG"
+        show_help
+        exit 1
         ;;
 
 esac
