@@ -25,8 +25,26 @@ POMODORO_STATUS_FILE=/tmp/pom_$USER
 POMODORO_BANG="❗"
 POMODORO_SYMBOL="🍅"
 POMODORO_NBSP=" "
+POMODORO_MINUTES=25
+
+#POMODORO_GRAPH_BLOCKS=( ▏ ▎ ▍ ▌ ▋ ▊ ▉ )
+POMODORO_GRAPH_BLOCKS=( ▁ ▂ ▃ ▄ ▅ ▆ ▇ )
+
+POMODORO_GRAPHICAL=0
 
 test -e "$HOME/.pomodororc" && . "$HOME/.pomodororc"
+
+function number_as_blocks () {
+    NUM=$1
+    IDX=$(( $(( NUM * ${#POMODORO_GRAPH_BLOCKS[@]} )) / POMODORO_MINUTES ))
+    if [ $IDX -lt 0 ]; then
+        IDX=0
+    elif [ $IDX -ge ${#POMODORO_GRAPH_BLOCKS[@]} ]; then
+        IDX=$(( ${#POMODORO_GRAPH_BLOCKS[@]} - 1 ))
+    fi
+
+    echo -n ${POMODORO_GRAPH_BLOCKS[$IDX]}
+}
 
 case $1 in
     "status")
@@ -46,9 +64,14 @@ case $1 in
             elif [ -z "$STATUS" ]; then
                 echo
             else
-                DELTA=$(( 25 - $(($(( $(date +%s) - $STATUS )) / 60 )) ))
+                DELTA=$(( $POMODORO_MINUTES - $(($(( $(date +%s) - $STATUS )) / 60 )) ))
                 if [ $DELTA -gt 0 ]; then
-                    echo "${DELTA} ${POMODORO_SYMBOL} "
+                    if [ "$POMODORO_GRAPHICAL" -ne 0 ]; then
+                        number_as_blocks $DELTA
+                        echo " ${POMODORO_SYMBOL}"
+                    else
+                        echo "${DELTA} ${POMODORO_SYMBOL} "
+                    fi
                 else
                     echo "${POMODORO_BANG} ${POMODORO_NBSP} ${POMODORO_SYMBOL}"   # this line has a unicode nonbreaking space in it for format reasons
                 fi

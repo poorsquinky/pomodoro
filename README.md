@@ -52,6 +52,16 @@ POMODORO_SYMBOL="P"
 POMODORO_NBSP=" "
 ```
 
+### Set the timer length (minutes)
+```bash
+POMODORO_MINUTES=30
+```
+
+### Use graphical meter instead of minute count
+```bash
+POMODORO_GRAPHICAL=1
+```
+
 ### Status blocks
 
 * A nice color status block:

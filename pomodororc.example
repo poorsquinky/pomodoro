@@ -6,6 +6,9 @@
 # Set the location of the status file
 # POMODORO_STATUS_FILE=/tmp/pom_$USER
 
+# CHange the timer duration (minutes)
+#POMODORO_MINUTES=25
+
 # Uncomment these if you have trouble with Unicode
 #POMODORO_BANG="!"
 #POMODORO_SYMBOL="P"
@@ -19,4 +22,10 @@
 
 # HTTP read-only synchronization
 #POMODORO_STATUS_URL=http://host.example.com/~user/pom
+
+# Enable graphical mode
+#POMODORO_GRAPHICAL=0
+# Change the graph from vertical to horizontal
+#POMODORO_GRAPH_BLOCKS=( ▏ ▎ ▍ ▌ ▋ ▊ ▉ )
+
 
