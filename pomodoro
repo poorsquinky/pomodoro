@@ -34,7 +34,7 @@ POMODORO_DATA_ONLY=0
 
 POMODORO_SSH=""
 
-POMODORO_REMOTE_CMD=(ssh -q -o "ConnectTimeout 2" $POMODORO_SSH bin/pomodoro)
+POMODORO_REMOTE_CMD=(ssh -q -o "ConnectTimeout 2" $POMODORO_SSH pomodoro)
 
 test -e "$HOME/.pomodororc" && . "$HOME/.pomodororc"
 
