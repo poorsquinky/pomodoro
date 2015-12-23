@@ -29,8 +29,8 @@ POMODORO_MINUTES=25
 
 #POMODORO_GRAPH_BLOCKS=( ▏ ▎ ▍ ▌ ▋ ▊ ▉ )
 POMODORO_GRAPH_BLOCKS=( ▁ ▂ ▃ ▄ ▅ ▆ ▇ )
-
 POMODORO_GRAPHICAL=0
+POMODORO_DATA_ONLY=0
 
 test -e "$HOME/.pomodororc" && . "$HOME/.pomodororc"
 
@@ -38,7 +38,10 @@ function show_help () {
 echo "Usage: $0 [options] start|status|clear
 
 Options:
-    -h --help       Display this message
+    -h | --help         Display this message
+    -g | --graph        Use unicode graph instead of numerical
+    -m | --minutes NUM  Enter number of minutes to use (default 25)
+    -D                  Output data only
 "
 }
 
@@ -63,7 +66,18 @@ while [ $# -gt 0 ]; do
         -h|--help)
             show_help
             exit 0
-        ;;
+            ;;
+        -g|--graph)
+            POMODORO_GRAPHICAL=1
+            ;;
+        -m|--minutes)
+            # XXX: validate the number
+            POMODORO_MIUTES=$1
+            shift
+            ;;
+        -D)
+            POMODORO_DATA_ONLY=1
+            ;;
         *)
             NONOPT_ARGS+=("$ARG")
             ;;
@@ -71,42 +85,92 @@ while [ $# -gt 0 ]; do
 
 done
 
+P_COUNT=""
+P_START=""
+P_DURATION=""
+
+### regex trigger warning ###
+function parse_status () {
+    IN="$@"
+    if [ ! -z "$IN" ]; then
+        if echo "$IN" | grep -E -q '^[0-9]+$'; then # numeric only
+            P_START=$IN
+        elif echo "$IN" | grep -E -q '^\s*\{\s*([a-zA-Z]+=[0-9]+;?)+\s*\}\s*$'; then # formatted data
+            while read LINE; do
+                K=$(echo "$LINE" | cut -d= -f1 | tr A-Z a-z)
+                V=$(echo "$LINE" | cut -d= -f2)
+                case "$K" in
+                    count)
+                        P_COUNT=$V
+                        ;;
+                    start)
+                        P_START=$V
+                        ;;
+                    duration)
+                        P_DURATION=$V
+                        ;;
+                    remaining)
+                        P_REMAINING=$V
+                        ;;
+                    # XXX no handler for bad values yet
+                esac
+
+            done < <(echo "$IN" | sed -E -e 's/ //g' -e 's/^ *\{ *//' -e 's/ *\} *$//' -e 's/;/\n/g')
+
+        else
+            echo "$IN" # upstream is old so just emit whatever it says
+            exit 0
+        fi
+        test -z "$P_DURATION" && P_DURATION=$POMODORO_MINUTES
+        P_REMAINING=$(( $P_DURATION - $(( $(( $(date +%s) - $P_START )) / 60 )) ))
+    fi
+}
 
 
 ARG=${NONOPT_ARGS[0]}
 case "$ARG" in
     "status")
-        if [ -e $POMODORO_STATUS_FILE ] || ([ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]); then
-            STATUS=$(cat $POMODORO_STATUS_FILE 2>/dev/null)
 
-            if [ -z "$STATUS" ] && [ ! -z "$POMODORO_STATUS_URL" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]; then
-                STATUS=$(curl -s "$POMODORO_STATUS_URL" 2>/dev/null)
-                if echo "$STATUS" | grep -q -E '[^0-9]'; then
-                    STATUS=""
-                fi
-            fi
+        P_COUNT=0 # XXX this doesn't do anything yet
 
-            if [ -z "$STATUS" ] && [ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]; then
-                ssh -q -o "ConnectTimeout 2" $POMODORO_SSH bin/pomodoro status 2>/dev/null
-                exit 0
-            elif [ -z "$STATUS" ]; then
-                echo
+        P_STATUS=""
+
+        # try the URL
+        if [ ! -z "$POMODORO_STATUS_URL" ]; then
+            UNPARSED=$(curl -s "$POMODORO_STATUS_URL" 2>/dev/null)
+            if echo "$UNPARSED" | grep -E -q '^\s*\{\s*([a-zA-Z]+=[0-9]+;?)+\s*\}\s*$'; then # formatted data
+                parse_status "$UNPARSED"
             else
-                DELTA=$(( $POMODORO_MINUTES - $(($(( $(date +%s) - $STATUS )) / 60 )) ))
-                if [ $DELTA -gt 0 ]; then
-                    if [ "$POMODORO_GRAPHICAL" -ne 0 ]; then
-                        number_as_blocks $DELTA
-                        echo " ${POMODORO_SYMBOL}"
-                    else
-                        echo "${DELTA} ${POMODORO_SYMBOL} "
-                    fi
-                else
-                    echo "${POMODORO_BANG} ${POMODORO_NBSP} ${POMODORO_SYMBOL}"   # this line has a unicode nonbreaking space in it for format reasons
-                fi
+                UNPARSED=""
+            fi
+        fi
+
+        # try SSH
+        if [ -z "$P_REMAINING" ] && [ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]; then
+            UNPARSED=$(ssh -q -o "ConnectTimeout 2" $POMODORO_SSH bin/pomodoro status -D 2>/dev/null)
+        fi
+
+        # try local
+        if [ -z "$P_REMAINING" ] && [ -z "$UNPARSED" ]; then
+            UNPARSED=$(cat $POMODORO_STATUS_FILE 2>/dev/null)
+        fi
+
+        test -z "$P_REMAINING" && parse_status "$UNPARSED"
+
+
+        if [ $P_REMAINING -gt 0 ]; then
+            if [ "$POMODORO_DATA_ONLY" -ne 0 ]; then
+                echo "{count=${P_COUNT};start=${P_START};duration=${P_DURATION}}"
+            elif [ "$POMODORO_GRAPHICAL" -ne 0 ]; then
+                number_as_blocks $P_REMAINING
+                echo " ${POMODORO_SYMBOL}"
+            else
+                echo "${P_REMAINING} ${POMODORO_SYMBOL} "
             fi
         else
-            echo
+            echo "${POMODORO_BANG} ${POMODORO_NBSP} ${POMODORO_SYMBOL}"   # this line has a unicode nonbreaking space in it for format reasons
         fi
+
         exit 0
         ;;
 
