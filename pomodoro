@@ -95,7 +95,7 @@ function parse_status () {
     if [ ! -z "$IN" ]; then
         if echo "$IN" | grep -E -q '^[0-9]+$'; then # numeric only
             P_START=$IN
-        elif echo "$IN" | grep -E -q '^\s*\{\s*([a-zA-Z]+=[0-9]+;?)+\s*\}\s*$'; then # formatted data
+        elif echo "$IN" | grep -E -q '^\s*\{\s*([a-zA-Z]+=\s*[0-9]+;?)+\s*\}\s*$'; then # formatted data
             while read LINE; do
                 K=$(echo "$LINE" | cut -d= -f1 | tr A-Z a-z)
                 V=$(echo "$LINE" | cut -d= -f2)
@@ -138,7 +138,7 @@ case "$ARG" in
         # try the URL
         if [ ! -z "$POMODORO_STATUS_URL" ]; then
             UNPARSED=$(curl -s "$POMODORO_STATUS_URL" 2>/dev/null)
-            if echo "$UNPARSED" | grep -E -q '^\s*\{\s*([a-zA-Z]+=[0-9]+;?)+\s*\}\s*$'; then # formatted data
+            if echo "$UNPARSED" | grep -E -q '^\s*\{\s*([a-zA-Z]+=\s*[0-9]+;?)+\s*\}\s*$'; then # formatted data
                 parse_status "$UNPARSED"
             else
                 UNPARSED=""
@@ -178,7 +178,7 @@ case "$ARG" in
         if [ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]; then
             ssh -q -o "ConnectTimeout 2" $POMODORO_SSH bin/pomodoro start 2>&1 > /dev/null
         else
-            date +%s > $POMODORO_STATUS_FILE
+            echo "{count=0;start=$(date +%s);duration=${POMODORO_MINUTES}}" > $POMODORO_STATUS_FILE
         fi
         tmux refresh-client -S
         exit 0
