@@ -2,7 +2,7 @@
 
 Tools and [tmux](https://tmux.github.io/) integration for the [Pomodoro Technique](http://pomodorotechnique.com/).  Allows you to put a 25-minute timer in the corner of your tmux sessions.
 
-Based loosely on [tmux-pomodoro](https://github.com/justincampbell/tmux-pomodoro)
+Based loosely on [tmux-pomodoro](https://github.com/justincampbell/tmux-pomodoro), and written in bash for portability.
 
 Here is a lovely screenshot:
 
@@ -12,7 +12,7 @@ Here is a lovely screenshot:
 
 `pomodoro` is a very simple and early-stage bash script, written hastily in an ironic act of procrastination.  It could probably use a lot of improvement.
 
-At the moment, your terminal and tmux must both support UTF-8 for this to work properly.
+A terminal that supports Unicode is recommended.
 
 ## Installation
 
