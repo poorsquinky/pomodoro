@@ -32,6 +32,10 @@ POMODORO_GRAPH_BLOCKS=( ▁ ▂ ▃ ▄ ▅ ▆ ▇ )
 POMODORO_GRAPHICAL=0
 POMODORO_DATA_ONLY=0
 
+POMODORO_SSH=""
+
+POMODORO_REMOTE_CMD=(ssh -q -o "ConnectTimeout 2" $POMODORO_SSH bin/pomodoro)
+
 test -e "$HOME/.pomodororc" && . "$HOME/.pomodororc"
 
 function show_help () {
@@ -129,7 +133,7 @@ function parse_status () {
 
 ARG=${NONOPT_ARGS[0]}
 case "$ARG" in
-    "status")
+    status)
 
         P_COUNT=0 # XXX this doesn't do anything yet
 
@@ -147,7 +151,7 @@ case "$ARG" in
 
         # try SSH
         if [ -z "$P_REMAINING" ] && [ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]; then
-            UNPARSED=$(ssh -q -o "ConnectTimeout 2" $POMODORO_SSH bin/pomodoro status -D 2>/dev/null)
+            UNPARSED=$("${POMODORO_REMOTE_CMD[@]}" status -D 2>/dev/null)
         fi
 
         # try local
@@ -155,28 +159,31 @@ case "$ARG" in
             UNPARSED=$(cat $POMODORO_STATUS_FILE 2>/dev/null)
         fi
 
-        test -z "$P_REMAINING" && parse_status "$UNPARSED"
+        if [ -z "$P_REMAINING" ] && [ ! -z "$UNPARSED" ]; then
+            parse_status "$UNPARSED"
+        fi
 
-
-        if [ $P_REMAINING -gt 0 ]; then
-            if [ "$POMODORO_DATA_ONLY" -ne 0 ]; then
-                echo "{count=${P_COUNT};start=${P_START};duration=${P_DURATION}}"
-            elif [ "$POMODORO_GRAPHICAL" -ne 0 ]; then
-                number_as_blocks $P_REMAINING
-                echo " ${POMODORO_SYMBOL}"
+        if [ "$POMODORO_DATA_ONLY" -ne 0 ]; then
+            echo "{count=${P_COUNT};start=${P_START};duration=${P_DURATION}}"
+        elif [ ! -z "$P_REMAINING" ]; then
+            if [ $P_REMAINING -gt 0 ]; then
+                if [ "$POMODORO_GRAPHICAL" -ne 0 ]; then
+                    number_as_blocks $P_REMAINING
+                    echo " ${POMODORO_SYMBOL}"
+                else
+                    echo "${P_REMAINING} ${POMODORO_SYMBOL} "
+                fi
             else
-                echo "${P_REMAINING} ${POMODORO_SYMBOL} "
+                echo "${POMODORO_BANG} ${POMODORO_NBSP} ${POMODORO_SYMBOL}"   # this line has a unicode nonbreaking space in it for format reasons
             fi
-        else
-            echo "${POMODORO_BANG} ${POMODORO_NBSP} ${POMODORO_SYMBOL}"   # this line has a unicode nonbreaking space in it for format reasons
         fi
 
         exit 0
         ;;
 
-    "start")
+    start)
         if [ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]; then
-            ssh -q -o "ConnectTimeout 2" $POMODORO_SSH bin/pomodoro start 2>&1 > /dev/null
+            "${POMODORO_REMOTE_CMD[@]}" start 2>&1 > /dev/null
         else
             echo "{count=0;start=$(date +%s);duration=${POMODORO_MINUTES}}" > $POMODORO_STATUS_FILE
         fi
@@ -184,9 +191,9 @@ case "$ARG" in
         exit 0
         ;;
 
-    "clear")
+    clear|reset)
         if [ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]; then
-            ssh -q -o "ConnectTimeout 2" $POMODORO_SSH bin/pomodoro clear 2>&1 > /dev/null
+            "${POMODORO_REMOTE_CMD[@]}" clear 2>&1 > /dev/null
         fi
         rm -f $POMODORO_STATUS_FILE
         tmux refresh-client -S
