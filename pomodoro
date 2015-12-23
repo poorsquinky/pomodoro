@@ -99,10 +99,11 @@ function parse_status () {
     if [ ! -z "$IN" ]; then
         if echo "$IN" | grep -E -q '^[0-9]+$'; then # numeric only
             P_START=$IN
-        elif echo "$IN" | grep -E -q '^\s*\{\s*([a-zA-Z]+=\s*[0-9]+;?)+\s*\}\s*$'; then # formatted data
+        elif echo "$IN" | grep -E -q '^\s*\{\s*([a-zA-Z]+=\s*[0-9]*;?)+\s*\}\s*$'; then # formatted data
             while read LINE; do
                 K=$(echo "$LINE" | cut -d= -f1 | tr A-Z a-z)
                 V=$(echo "$LINE" | cut -d= -f2)
+                test -z "$V" && exit 0
                 case "$K" in
                     count)
                         P_COUNT=$V
