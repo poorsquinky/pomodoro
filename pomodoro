@@ -130,38 +130,45 @@ function parse_status () {
     fi
 }
 
+function read_status () {
+
+    P_COUNT=0 # XXX this doesn't do anything yet
+
+    P_STATUS=""
+
+    # try the URL
+    if [ ! -z "$POMODORO_STATUS_URL" ]; then
+        UNPARSED=$(curl -s "$POMODORO_STATUS_URL" 2>/dev/null)
+        if echo "$UNPARSED" | grep -E -q '^\s*\{\s*([a-zA-Z]+=\s*[0-9]+;?)+\s*\}\s*$'; then # formatted data
+            parse_status "$UNPARSED"
+        else
+            UNPARSED=""
+        fi
+    fi
+
+    # try SSH
+    if [ -z "$P_REMAINING" ] && [ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]; then
+        UNPARSED=$("${POMODORO_REMOTE_CMD[@]}" status -D 2>/dev/null)
+    fi
+
+    # try local
+    if [ -z "$P_REMAINING" ] && [ -z "$UNPARSED" ]; then
+        UNPARSED=$(cat $POMODORO_STATUS_FILE 2>/dev/null)
+    fi
+
+    if [ -z "$P_REMAINING" ] && [ ! -z "$UNPARSED" ]; then
+        parse_status "$UNPARSED"
+    fi
+
+
+}
+
 
 ARG=${NONOPT_ARGS[0]}
 case "$ARG" in
     status)
 
-        P_COUNT=0 # XXX this doesn't do anything yet
-
-        P_STATUS=""
-
-        # try the URL
-        if [ ! -z "$POMODORO_STATUS_URL" ]; then
-            UNPARSED=$(curl -s "$POMODORO_STATUS_URL" 2>/dev/null)
-            if echo "$UNPARSED" | grep -E -q '^\s*\{\s*([a-zA-Z]+=\s*[0-9]+;?)+\s*\}\s*$'; then # formatted data
-                parse_status "$UNPARSED"
-            else
-                UNPARSED=""
-            fi
-        fi
-
-        # try SSH
-        if [ -z "$P_REMAINING" ] && [ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]; then
-            UNPARSED=$("${POMODORO_REMOTE_CMD[@]}" status -D 2>/dev/null)
-        fi
-
-        # try local
-        if [ -z "$P_REMAINING" ] && [ -z "$UNPARSED" ]; then
-            UNPARSED=$(cat $POMODORO_STATUS_FILE 2>/dev/null)
-        fi
-
-        if [ -z "$P_REMAINING" ] && [ ! -z "$UNPARSED" ]; then
-            parse_status "$UNPARSED"
-        fi
+        read_status
 
         if [ "$POMODORO_DATA_ONLY" -ne 0 ]; then
             echo "{count=${P_COUNT};start=${P_START};duration=${P_DURATION}}"
