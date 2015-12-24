@@ -41,7 +41,7 @@ if [ -z "$POMODORO_REMOTE_CMD" ] && [ ! -z "$POMODORO_SSH" ]; then
 fi
 
 function show_help () {
-echo "Usage: $0 [options] start|status|clear
+echo "Usage: $0 [options] start|status|clear|increment|decrement
 
 Options:
     -h | --help         Display this message
@@ -224,7 +224,7 @@ case "$ARG" in
                 if [ $P_SHOWCOUNT -ne 0 ]; then
                     if [ "$POMODORO_GRAPHICAL" -ne 0 ]; then
                         number_as_blocks $P_COUNT
-                    else
+                    elif [ $P_COUNT -gt 0 ]; then
                         echo -n "${P_COUNT}"
                     fi
                     echo -n "${POMODORO_NBSP}"
@@ -304,6 +304,23 @@ case "$ARG" in
         write_status
         tmux refresh-client -S
         exit 0
+        ;;
+
+    inc|increment)
+        read_status
+        P_COUNT=$(( P_COUNT + 1 ))
+        write_status
+        tmux refresh-client -S
+        ;;
+
+    dec|decrement)
+        read_status
+        P_COUNT=$(( P_COUNT - 1 ))
+        if [ $P_COUNT -lt 0 ]; then
+            P_COUNT=0
+        fi
+        write_status
+        tmux refresh-client -S
         ;;
 
     *)
