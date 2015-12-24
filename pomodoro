@@ -189,9 +189,10 @@ case "$ARG" in
         ;;
 
     start)
-        if [ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]; then
-            "${POMODORO_REMOTE_CMD[@]}" start 2>&1 > /dev/null
-        else
+        if  [ -z "$POMODORO_SSH" ] || \
+            [ $(hostname) == "$POMODORO_NOSYNC_NAME" ] || \
+            ! "${POMODORO_REMOTE_CMD[@]}" start 2>&1 > /dev/null
+        then
             echo "{count=0;start=$(date +%s);duration=${POMODORO_MINUTES}}" > $POMODORO_STATUS_FILE
         fi
         tmux refresh-client -S
