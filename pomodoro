@@ -92,6 +92,7 @@ while [ $# -gt 0 ]; do
         -l|--local)
             POMODORO_REMOTE_CMD=""
             POMODORO_STATUS_URL=""
+            POMODORO_SSH=""
             ;;
         *)
             NONOPT_ARGS+=("$ARG")
@@ -119,7 +120,6 @@ function parse_status () {
             while read LINE; do
                 K=$(echo "$LINE" | cut -d= -f1 | tr A-Z a-z)
                 V=$(echo "$LINE" | cut -d= -f2)
-                test -z "$V" && exit 0
                 case "$K" in
                     count)
                         P_COUNT=$V
@@ -144,7 +144,7 @@ function parse_status () {
         else
             P_RAW="$IN" # upstream is old so just emit whatever it says
         fi
-        if [ -z "$P_RAW" ]; then
+        if [ -z "$P_RAW" ] && [ ! -z "$P_DURATION" ] && [ ! -z "$P_START" ]; then
             test -z "$P_DURATION" && P_DURATION=$POMODORO_MINUTES
             P_REMAINING=$(( $P_DURATION - $(( $(( $NOW - $P_START )) / 60 )) ))
         fi
