@@ -69,6 +69,16 @@ POMODORO_GRAPHICAL=1
 set -g status-right '#[fg=colour07,bg=colour05] #(printf "%%-3s" `test -e /usr/local/bin/pomodoro && pomodoro status`)'
 ```
 
+* Status block including completed timer count:
+```tmux
+set -g status-right '#[fg=colour07,bg=colour05] #(printf "%%-3s" `test -e /usr/local/bin/pomodoro && pomodoro -c status`)'
+```
+
+* Status block with graphical display:
+```tmux
+set -g status-right '#[fg=colour07,bg=colour05] #(printf "%%-3s" `test -e /usr/local/bin/pomodoro && pomodoro -g status`)'
+```
+
 * Full disclosure: the status-right that I personally use, with a clock and host load average.  Requires a 256-color terminal and a [powerline](https://github.com/powerline/fonts) or [nerd](https://github.com/ryanoasis/nerd-fonts) font:
 ```tmux
 set -g status-right '#[fg=colour54] #[fg=colour205,bg=colour54] #(printf "%%-3s" `test -e /usr/local/bin/pomodoro && pomodoro status`) #[fg=colour57] #[fg=colour140,bg=colour57] #(uptime | sed -e "s/.*: //" -e "s/,//g") #[fg=colour135]#[fg=colour15,bg=colour135] %m/%d %H:%M '
