@@ -32,10 +32,13 @@ POMODORO_GRAPHICAL=0
 POMODORO_DATA_ONLY=0
 
 POMODORO_SSH=""
-
-POMODORO_REMOTE_CMD=(ssh -q -o "ConnectTimeout 2" $POMODORO_SSH pomodoro)
+POMODORO_REMOTE_CMD=""
 
 test -e "$HOME/.pomodororc" && . "$HOME/.pomodororc"
+
+if [ -z "$POMODORO_REMOTE_CMD" ] && [ ! -z "$POMODORO_SSH" ]; then
+    POMODORO_REMOTE_CMD=(ssh -q -o "ConnectTimeout 2" $POMODORO_SSH pomodoro)
+fi
 
 function show_help () {
 echo "Usage: $0 [options] start|status|clear
