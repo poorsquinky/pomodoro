@@ -93,7 +93,9 @@ while [ $# -gt 0 ]; do
 done
 
 P_RAW=""
+
 P_COUNT=""
+P_FIRST=""
 P_START=""
 P_DURATION=""
 
@@ -111,6 +113,9 @@ function parse_status () {
                 case "$K" in
                     count)
                         P_COUNT=$V
+                        ;;
+                    first)
+                        P_FIRST=$V
                         ;;
                     start)
                         P_START=$V
@@ -168,6 +173,7 @@ function read_status () {
 function write_status () {
     echo '{' \
             "count=${P_COUNT};" \
+            "first=${P_FIRST};" \
             "start=${P_START};" \
             "duration=${P_DURATION}" \
          '}' > $POMODORO_STATUS_FILE
@@ -209,6 +215,9 @@ case "$ARG" in
             read_status
             P_START=$(date +%s)
             P_DURATION=$POMODORO_MINUTES
+            if [ -z "$P_FIRST" ]; then
+                P_FIRST=$P_START
+            fi
             write_status
         fi
         tmux refresh-client -S
