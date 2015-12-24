@@ -44,6 +44,7 @@ Options:
     -h | --help         Display this message
     -g | --graph        Use unicode graph instead of numerical
     -m | --minutes NUM  Enter number of minutes to use (default 25)
+    -l | --local        Override remote settings and only work locally
     -D                  Output data only
 "
 }
@@ -84,6 +85,10 @@ while [ $# -gt 0 ]; do
             ;;
         -D)
             POMODORO_DATA_ONLY=1
+            ;;
+        -l|--local)
+            POMODORO_REMOTE_CMD=""
+            POMODORO_STATUS_URL=""
             ;;
         *)
             NONOPT_ARGS+=("$ARG")
@@ -210,7 +215,7 @@ case "$ARG" in
 
     start)
 
-        if  [ -z "$POMODORO_SSH" ] || \
+        if  [ -z "$POMODORO_REMOTE_CMD" ] || \
             [ $(hostname) == "$POMODORO_NOSYNC_NAME" ] || \
             ! "${POMODORO_REMOTE_CMD[@]}" start -m ${POMODORO_MIUTES} 2>&1 > /dev/null
         then
