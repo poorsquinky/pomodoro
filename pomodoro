@@ -27,7 +27,6 @@ POMODORO_SYMBOL="🍅"
 POMODORO_NBSP=" "
 POMODORO_MINUTES=25
 
-#POMODORO_GRAPH_BLOCKS=( ▏ ▎ ▍ ▌ ▋ ▊ ▉ )
 POMODORO_GRAPH_BLOCKS=( ▁ ▂ ▃ ▄ ▅ ▆ ▇ )
 POMODORO_GRAPHICAL=0
 POMODORO_DATA_ONLY=0
@@ -175,7 +174,7 @@ case "$ARG" in
                     echo "${P_REMAINING} ${POMODORO_SYMBOL} "
                 fi
             else
-                echo "${POMODORO_BANG} ${POMODORO_NBSP} ${POMODORO_SYMBOL}"   # this line has a unicode nonbreaking space in it for format reasons
+                echo "${POMODORO_BANG} ${POMODORO_NBSP} ${POMODORO_SYMBOL}"
             fi
         fi
 
