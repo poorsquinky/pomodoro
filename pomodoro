@@ -74,9 +74,13 @@ while [ $# -gt 0 ]; do
             POMODORO_GRAPHICAL=1
             ;;
         -m|--minutes)
-            # XXX: validate the number
-            POMODORO_MIUTES=$1
-            shift
+            if echo "$1" | grep -q -E '^[0-9]+$'; then
+                POMODORO_MIUTES=$1
+                shift
+            else
+                echo "Invalid number: '$1'"
+                exit 1
+            fi
             ;;
         -D)
             POMODORO_DATA_ONLY=1
@@ -88,6 +92,7 @@ while [ $# -gt 0 ]; do
 
 done
 
+P_RAW=""
 P_COUNT=""
 P_START=""
 P_DURATION=""
@@ -98,7 +103,7 @@ function parse_status () {
     if [ ! -z "$IN" ]; then
         if echo "$IN" | grep -E -q '^[0-9]+$'; then # numeric only
             P_START=$IN
-        elif echo "$IN" | grep -E -q '^\s*\{\s*([a-zA-Z]+=\s*[0-9]*;?)+\s*\}\s*$'; then # formatted data
+        elif echo "$IN" | grep -E -q '^\s*\{\s*([a-zA-Z]+=\s*[0-9]*;?\s*)+\s*\}\s*$'; then # formatted data
             while read LINE; do
                 K=$(echo "$LINE" | cut -d= -f1 | tr A-Z a-z)
                 V=$(echo "$LINE" | cut -d= -f2)
@@ -122,11 +127,12 @@ function parse_status () {
             done < <(echo "$IN" | sed -E -e 's/ //g' -e 's/^ *\{ *//' -e 's/ *\} *$//' -e 's/;/\n/g')
 
         else
-            echo "$IN" # upstream is old so just emit whatever it says
-            exit 0
+            P_RAW="$IN" # upstream is old so just emit whatever it says
         fi
-        test -z "$P_DURATION" && P_DURATION=$POMODORO_MINUTES
-        P_REMAINING=$(( $P_DURATION - $(( $(( $(date +%s) - $P_START )) / 60 )) ))
+        if [ -z "$P_RAW" ]; then
+            test -z "$P_DURATION" && P_DURATION=$POMODORO_MINUTES
+            P_REMAINING=$(( $P_DURATION - $(( $(( $(date +%s) - $P_START )) / 60 )) ))
+        fi
     fi
 }
 
@@ -160,7 +166,11 @@ function read_status () {
 }
 
 function write_status () {
-    echo "{count=${P_COUNT};start=${P_START};duration=${P_DURATION}}" > $POMODORO_STATUS_FILE
+    echo '{' \
+            "count=${P_COUNT};" \
+            "start=${P_START};" \
+            "duration=${P_DURATION}" \
+         '}' > $POMODORO_STATUS_FILE
 }
 
 ARG=${NONOPT_ARGS[0]}
@@ -168,19 +178,23 @@ case "$ARG" in
     status)
         read_status
 
-        if [ "$POMODORO_DATA_ONLY" -ne 0 ]; then
-            echo "{count=${P_COUNT};start=${P_START};duration=${P_DURATION}}"
-        elif [ ! -z "$P_REMAINING" ]; then
-            if [ $P_REMAINING -gt 0 ]; then
-                if [ "$POMODORO_GRAPHICAL" -ne 0 ]; then
-                    number_as_blocks $P_REMAINING
-                    echo " ${POMODORO_SYMBOL}"
+        if [ -z "$P_RAW" ]; then
+            if [ "$POMODORO_DATA_ONLY" -ne 0 ]; then
+                echo "{count=${P_COUNT};start=${P_START};duration=${P_DURATION}}"
+            elif [ ! -z "$P_REMAINING" ]; then
+                if [ $P_REMAINING -gt 0 ]; then
+                    if [ "$POMODORO_GRAPHICAL" -ne 0 ]; then
+                        number_as_blocks $P_REMAINING
+                        echo " ${POMODORO_SYMBOL}"
+                    else
+                        echo "${P_REMAINING} ${POMODORO_SYMBOL} "
+                    fi
                 else
-                    echo "${P_REMAINING} ${POMODORO_SYMBOL} "
+                    echo "${POMODORO_BANG} ${POMODORO_NBSP} ${POMODORO_SYMBOL}"
                 fi
-            else
-                echo "${POMODORO_BANG} ${POMODORO_NBSP} ${POMODORO_SYMBOL}"
             fi
+        else
+            echo "$P_RAW"
         fi
 
         exit 0
@@ -190,7 +204,7 @@ case "$ARG" in
 
         if  [ -z "$POMODORO_SSH" ] || \
             [ $(hostname) == "$POMODORO_NOSYNC_NAME" ] || \
-            ! "${POMODORO_REMOTE_CMD[@]}" start 2>&1 > /dev/null
+            ! "${POMODORO_REMOTE_CMD[@]}" start -m ${POMODORO_MIUTES} 2>&1 > /dev/null
         then
             read_status
             P_START=$(date +%s)
