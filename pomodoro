@@ -131,9 +131,7 @@ function parse_status () {
 }
 
 function read_status () {
-
     P_COUNT=0 # XXX this doesn't do anything yet
-
     P_STATUS=""
 
     # try the URL
@@ -159,15 +157,15 @@ function read_status () {
     if [ -z "$P_REMAINING" ] && [ ! -z "$UNPARSED" ]; then
         parse_status "$UNPARSED"
     fi
-
-
 }
 
+function write_status () {
+    echo "{count=${P_COUNT};start=${P_START};duration=${P_DURATION}}" > $POMODORO_STATUS_FILE
+}
 
 ARG=${NONOPT_ARGS[0]}
 case "$ARG" in
     status)
-
         read_status
 
         if [ "$POMODORO_DATA_ONLY" -ne 0 ]; then
@@ -189,11 +187,15 @@ case "$ARG" in
         ;;
 
     start)
+
         if  [ -z "$POMODORO_SSH" ] || \
             [ $(hostname) == "$POMODORO_NOSYNC_NAME" ] || \
             ! "${POMODORO_REMOTE_CMD[@]}" start 2>&1 > /dev/null
         then
-            echo "{count=0;start=$(date +%s);duration=${POMODORO_MINUTES}}" > $POMODORO_STATUS_FILE
+            read_status
+            P_START=$(date +%s)
+            P_DURATION=$POMODORO_MINUTES
+            write_status
         fi
         tmux refresh-client -S
         exit 0
@@ -215,3 +217,4 @@ case "$ARG" in
         ;;
 
 esac
+
