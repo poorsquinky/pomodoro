@@ -28,6 +28,7 @@ POMODORO_NBSP=" "
 POMODORO_MINUTES=25
 
 POMODORO_GRAPH_BLOCKS=( ▁ ▂ ▃ ▄ ▅ ▆ ▇ )
+POMODORO_DOT_BLOCKS=( ⠁ ⠃ ⠇ ⡇ ⡏ ⡟ ⡿ ⣿ )
 POMODORO_GRAPHICAL=0
 POMODORO_DATA_ONLY=0
 
@@ -55,21 +56,19 @@ Options:
 
 function number_as_blocks () {
     NUM=$1
-    for I in $( seq $(( NUM / 4 )) ); do
-        echo -n "▇"
+    BLOCKSIZE=${#POMODORO_DOT_BLOCKS[@]}
+    for I in $( seq $(( NUM / $BLOCKSIZE )) ); do
+        echo -n ${POMODORO_DOT_BLOCKS[$BLOCKSIZE - 1]}
     done
-    case $(( NUM % 4 )) in
-        1)
-            echo -n "▘"
-            ;;
-        2)
-            echo -n "▀"
-            ;;
-        3)
-            echo -n "▛"
-            ;;
-    esac
+    REM=$(( NUM % BLOCKSIZE ))
+    if [ $REM -gt 0 ]; then
+        echo -n ${POMODORO_DOT_BLOCKS[$REM - 1]}
+    fi
 }
+
+number_as_blocks 23
+echo
+exit 0
 
 function number_as_bargraph () {
     NUM=$1

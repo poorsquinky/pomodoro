@@ -28,4 +28,6 @@
 # Change the graph from vertical to horizontal
 #POMODORO_GRAPH_BLOCKS=( ▏ ▎ ▍ ▌ ▋ ▊ ▉ )
 
+# Uncomment if unicode braille dots don't look right in your terminal
+#POMODORO_DOT_BLOCKS=( ▘ ▀ ▛ ▇ )
 
