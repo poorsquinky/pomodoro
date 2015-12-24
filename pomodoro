@@ -66,10 +66,6 @@ function number_as_blocks () {
     fi
 }
 
-number_as_blocks 23
-echo
-exit 0
-
 function number_as_bargraph () {
     NUM=$1
     IDX=$(( $(( NUM * ${#POMODORO_GRAPH_BLOCKS[@]} )) / POMODORO_MINUTES ))
@@ -221,26 +217,25 @@ case "$ARG" in
                 echo "{count=${P_COUNT};start=${P_START};duration=${P_DURATION}}"
             else
                 if [ $P_SHOWCOUNT -ne 0 ]; then
-                    if [ "$POMODORO_GRAPHICAL" -ne 0 ]; then
-                        number_as_blocks $P_COUNT
-                    elif [ $P_COUNT -gt 0 ]; then
-                        echo -n "${P_COUNT}"
+                    number_as_blocks $P_COUNT
+                    if [ ! -z "$P_COUNT" ] && [ $P_COUNT -gt 0 ]; then
+                        echo -n "${POMODORO_NBSP}"
                     fi
-                    echo -n "${POMODORO_NBSP}"
                 fi
 
                 if [ ! -z "$P_REMAINING" ]; then
-                    echo -n "${POMODORO_SYMBOL}"
                     if [ $P_REMAINING -gt 0 ]; then
-                        echo -n " ${POMODORO_NBSP}"
                         if [ "$POMODORO_GRAPHICAL" -ne 0 ]; then
                             number_as_bargraph $P_REMAINING
                         else
                             echo -n "${P_REMAINING}"
                         fi
+                        echo -n "${POMODORO_NBSP} "
                     else
-                        echo -n " ${POMODORO_NBSP}${POMODORO_BANG}"
+                        echo -n "${POMODORO_BANG}"
+                        echo -n "${POMODORO_NBSP} "
                     fi
+                    echo -n "${POMODORO_SYMBOL}"
                 fi
 
                 if [ ! -z "$P_REMAINING" ] || [ $P_SHOWCOUNT -ne 0 ]; then
