@@ -48,11 +48,30 @@ Options:
     -g | --graph        Use unicode graph instead of numerical
     -m | --minutes NUM  Enter number of minutes to use (default 25)
     -l | --local        Override remote settings and only work locally
+    -c | --showcount    Display count of completed timers
     -D                  Output data only
 "
 }
 
 function number_as_blocks () {
+    NUM=$1
+    for I in $( seq $(( NUM / 4 )) ); do
+        echo -n "▇"
+    done
+    case $(( NUM % 4 )) in
+        1)
+            echo -n "▘"
+            ;;
+        2)
+            echo -n "▀"
+            ;;
+        3)
+            echo -n "▛"
+            ;;
+    esac
+}
+
+function number_as_bargraph () {
     NUM=$1
     IDX=$(( $(( NUM * ${#POMODORO_GRAPH_BLOCKS[@]} )) / POMODORO_MINUTES ))
     if [ $IDX -lt 0 ]; then
@@ -63,6 +82,14 @@ function number_as_blocks () {
 
     echo -n ${POMODORO_GRAPH_BLOCKS[$IDX]}
 }
+
+P_RAW=""
+P_COUNT=""
+P_FIRST=""
+P_START=""
+P_DURATION=""
+
+P_SHOWCOUNT=0
 
 NONOPT_ARGS=()
 # I'm not in love with getopt or getopts right now, so we have this:
@@ -94,19 +121,15 @@ while [ $# -gt 0 ]; do
             POMODORO_STATUS_URL=""
             POMODORO_SSH=""
             ;;
+        -c|showcount)
+            P_SHOWCOUNT=1
+            ;;
         *)
             NONOPT_ARGS+=("$ARG")
             ;;
     esac
 
 done
-
-P_RAW=""
-
-P_COUNT=""
-P_FIRST=""
-P_START=""
-P_DURATION=""
 
 NOW=$(date +%s)
 
@@ -152,7 +175,7 @@ function parse_status () {
 }
 
 function read_status () {
-    P_COUNT=0 # XXX this doesn't do anything yet
+    P_COUNT=0
     P_STATUS=""
 
     # try the URL
@@ -197,17 +220,34 @@ case "$ARG" in
         if [ -z "$P_RAW" ]; then
             if [ "$POMODORO_DATA_ONLY" -ne 0 ]; then
                 echo "{count=${P_COUNT};start=${P_START};duration=${P_DURATION}}"
-            elif [ ! -z "$P_REMAINING" ]; then
-                if [ $P_REMAINING -gt 0 ]; then
+            else
+                if [ $P_SHOWCOUNT -ne 0 ]; then
                     if [ "$POMODORO_GRAPHICAL" -ne 0 ]; then
-                        number_as_blocks $P_REMAINING
-                        echo " ${POMODORO_SYMBOL}"
+                        number_as_blocks $P_COUNT
                     else
-                        echo "${P_REMAINING} ${POMODORO_SYMBOL} "
+                        echo -n "${P_COUNT}"
                     fi
-                else
-                    echo "${POMODORO_BANG} ${POMODORO_NBSP} ${POMODORO_SYMBOL}"
+                    echo -n "${POMODORO_NBSP}"
                 fi
+
+                if [ ! -z "$P_REMAINING" ]; then
+                    echo -n "${POMODORO_SYMBOL}"
+                    if [ $P_REMAINING -gt 0 ]; then
+                        echo -n " ${POMODORO_NBSP}"
+                        if [ "$POMODORO_GRAPHICAL" -ne 0 ]; then
+                            number_as_bargraph $P_REMAINING
+                        else
+                            echo -n "${P_REMAINING}"
+                        fi
+                    else
+                        echo -n " ${POMODORO_NBSP}${POMODORO_BANG}"
+                    fi
+                fi
+
+                if [ ! -z "$P_REMAINING" ] || [ $P_SHOWCOUNT -ne 0 ]; then
+                    echo
+                fi
+
             fi
         else
             echo "$P_RAW"
