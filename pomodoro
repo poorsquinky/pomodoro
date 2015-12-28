@@ -198,7 +198,7 @@ function read_status () {
     fi
 }
 
-function write_status () {
+function emit_data () {
     echo '{' \
             "count=${P_COUNT};" \
             "first=${P_FIRST};" \
@@ -214,7 +214,7 @@ case "$ARG" in
 
         if [ -z "$P_RAW" ]; then
             if [ "$POMODORO_DATA_ONLY" -ne 0 ]; then
-                write_status
+                emit_data
             else
                 if [ $P_SHOWCOUNT -ne 0 ]; then
                     number_as_blocks $P_COUNT
@@ -262,7 +262,7 @@ case "$ARG" in
             if [ -z "$P_FIRST" ]; then
                 P_FIRST=$P_START
             fi
-            write_status > $POMODORO_STATUS_FILE
+            emit_data > $POMODORO_STATUS_FILE
         fi
         tmux refresh-client -S
         exit 0
@@ -295,7 +295,7 @@ case "$ARG" in
 
         P_START=""
         P_DURATION=""
-        write_status
+        emit_data > $POMODORO_STATUS_FILE
         tmux refresh-client -S
         exit 0
         ;;
@@ -303,7 +303,7 @@ case "$ARG" in
     inc|increment)
         read_status
         P_COUNT=$(( P_COUNT + 1 ))
-        write_status
+        emit_data > $POMODORO_STATUS_FILE
         tmux refresh-client -S
         ;;
 
@@ -313,7 +313,7 @@ case "$ARG" in
         if [ $P_COUNT -lt 0 ]; then
             P_COUNT=0
         fi
-        write_status
+        emit_data > $POMODORO_STATUS_FILE
         tmux refresh-client -S
         ;;
 
