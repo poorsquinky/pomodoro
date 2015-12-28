@@ -57,15 +57,15 @@ Options:
 function number_as_blocks () {
     NUM=$1
     BLOCKSIZE=${#POMODORO_DOT_BLOCKS[@]}
+    REM=$(( NUM % BLOCKSIZE ))
+    if [ $REM -gt 0 ]; then
+        echo -n ${POMODORO_DOT_BLOCKS[$REM - 1]}
+    fi
     COUNT=0
     while [ $COUNT -lt $(( NUM / $BLOCKSIZE )) ]; do
         COUNT=$(( COUNT + 1 ))
         echo -n ${POMODORO_DOT_BLOCKS[$BLOCKSIZE - 1]}
     done
-    REM=$(( NUM % BLOCKSIZE ))
-    if [ $REM -gt 0 ]; then
-        echo -n ${POMODORO_DOT_BLOCKS[$REM - 1]}
-    fi
 }
 
 function number_as_bargraph () {
