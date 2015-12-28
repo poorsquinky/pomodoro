@@ -157,7 +157,7 @@ function parse_status () {
                     # XXX no handler for bad values yet
                 esac
 
-            done < <(echo "$IN" | sed -E -e 's/ //g' -e 's/^ *\{ *//' -e 's/ *\} *$//' -e 's/;/\n/g')
+            done < <(echo "$IN" | sed -E -e 's/ //g' -e 's/^ *\{ *//' -e 's/ *\} *$//' | tr ';' '\n')
 
         else
             P_RAW="$IN" # upstream is old so just emit whatever it says
