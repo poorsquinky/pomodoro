@@ -57,7 +57,9 @@ Options:
 function number_as_blocks () {
     NUM=$1
     BLOCKSIZE=${#POMODORO_DOT_BLOCKS[@]}
-    for I in $( seq $(( NUM / $BLOCKSIZE )) ); do
+    COUNT=0
+    while [ $COUNT -lt $(( NUM / $BLOCKSIZE )) ]; do
+        COUNT=$(( COUNT + 1 ))
         echo -n ${POMODORO_DOT_BLOCKS[$BLOCKSIZE - 1]}
     done
     REM=$(( NUM % BLOCKSIZE ))
