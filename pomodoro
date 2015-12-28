@@ -204,7 +204,7 @@ function write_status () {
             "first=${P_FIRST};" \
             "start=${P_START};" \
             "duration=${P_DURATION}" \
-         '}' > $POMODORO_STATUS_FILE
+         '}'
 }
 
 ARG=${NONOPT_ARGS[0]}
@@ -214,7 +214,7 @@ case "$ARG" in
 
         if [ -z "$P_RAW" ]; then
             if [ "$POMODORO_DATA_ONLY" -ne 0 ]; then
-                echo "{count=${P_COUNT};start=${P_START};duration=${P_DURATION}}"
+                write_status
             else
                 if [ $P_SHOWCOUNT -ne 0 ]; then
                     number_as_blocks $P_COUNT
@@ -254,7 +254,7 @@ case "$ARG" in
 
         if  [ -z "$POMODORO_REMOTE_CMD" ] || \
             [ $(hostname) == "$POMODORO_NOSYNC_NAME" ] || \
-            ! "${POMODORO_REMOTE_CMD[@]}" start -m ${POMODORO_MIUTES} 2>&1 > /dev/null
+            ! "${POMODORO_REMOTE_CMD[@]}" start -m ${POMODORO_MINUTES} 2>&1 > /dev/null
         then
             read_status
             P_START=$NOW
@@ -262,7 +262,7 @@ case "$ARG" in
             if [ -z "$P_FIRST" ]; then
                 P_FIRST=$P_START
             fi
-            write_status
+            write_status > $POMODORO_STATUS_FILE
         fi
         tmux refresh-client -S
         exit 0
