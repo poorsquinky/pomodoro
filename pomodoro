@@ -303,7 +303,12 @@ case "$ARG" in
     inc|increment)
         read_status
         P_COUNT=$(( P_COUNT + 1 ))
-        emit_data > $POMODORO_STATUS_FILE
+        if  [ -z "$POMODORO_REMOTE_CMD" ] || \
+            [ $(hostname) == "$POMODORO_NOSYNC_NAME" ] || \
+            ! "${POMODORO_REMOTE_CMD[@]}" inc 2>&1 > /dev/null
+        then
+            emit_data > $POMODORO_STATUS_FILE
+        fi
         tmux refresh-client -S
         ;;
 
@@ -313,7 +318,12 @@ case "$ARG" in
         if [ $P_COUNT -lt 0 ]; then
             P_COUNT=0
         fi
-        emit_data > $POMODORO_STATUS_FILE
+        if  [ -z "$POMODORO_REMOTE_CMD" ] || \
+            [ $(hostname) == "$POMODORO_NOSYNC_NAME" ] || \
+            ! "${POMODORO_REMOTE_CMD[@]}" dec 2>&1 > /dev/null
+        then
+            emit_data > $POMODORO_STATUS_FILE
+        fi
         tmux refresh-client -S
         ;;
 
