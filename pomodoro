@@ -268,7 +268,7 @@ case "$ARG" in
         exit 0
         ;;
 
-    clear|reset)
+    clear|reset|cancel)
         read_status
 
         # handle the counter
