@@ -6,7 +6,7 @@ Based loosely on [tmux-pomodoro](https://github.com/justincampbell/tmux-pomodoro
 
 Here is a lovely screenshot:
 
-![Powerline-ish status-right screenshot](https://cloud.githubusercontent.com/assets/14341469/11915117/0d1da92e-a64d-11e5-9eb3-0371fca50100.png)
+![Powerline-ish status-right screenshot](https://cloud.githubusercontent.com/assets/14341469/12039500/df27efd6-ae15-11e5-858c-108d5f4b7c37.png)
 
 ## Caveats
 
