@@ -198,6 +198,18 @@ function read_status () {
     if [ -z "$P_REMAINING" ] && [ ! -z "$UNPARSED" ]; then
         parse_status "$UNPARSED"
     fi
+
+    # reset the counter stats if the first was too old
+    if [ ! -z "${P_FIRST}" ]; then
+        # reset the counter if it's over 12 hours old
+        # FIXME: the counter should stay alive as long as there is recent activity
+        if [ ! -z "$P_FIRST" ] && [ $(( NOW - P_FIRST )) -gt 43200 ]; then
+            P_COUNT=0
+            P_REMAINING=""
+            P_FIRST=""
+        fi
+    fi
+
 }
 
 function emit_data () {
@@ -275,14 +287,6 @@ case "$ARG" in
 
         # handle the counter
         if [ ! -z "${P_COUNT}${P_FIRST}" ]; then
-
-            # reset the counter if it's over 12 hours old
-            # FIXME: the counter should stay alive as long as there is recent activity
-            if [ ! -z "$P_FIRST" ] && [ $(( NOW - P_FIRST )) -gt 43200 ]; then
-                P_COUNT=0
-                P_REMAINING=""
-                P_FIRST=""
-            fi
 
             if [ ! -z "$P_REMAINING" ]; then    # there was a timer active
                 if [ $P_REMAINING -le 0 ]; then # this timer was complete
