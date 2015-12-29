@@ -81,7 +81,7 @@ set -g status-right '#[fg=colour07,bg=colour05] #(printf "%%-3s" `test -e /usr/l
 
 * Full disclosure: the status-right that I personally use, with a clock and host load average.  Requires a 256-color terminal and a [powerline](https://github.com/powerline/fonts) or [nerd](https://github.com/ryanoasis/nerd-fonts) font:
 ```tmux
-set -g status-right '#[fg=colour54] #[fg=colour205,bg=colour54] #(printf "%%-3s" `test -e /usr/local/bin/pomodoro && pomodoro status`) #[fg=colour57] #[fg=colour140,bg=colour57] #(uptime | sed -e "s/.*: //" -e "s/,//g") #[fg=colour135]#[fg=colour15,bg=colour135] %m/%d %H:%M '
+set -g status-right '#[fg=colour54] #[fg=colour205,bg=colour54] #(printf "%%-3s" `test -e /usr/local/bin/pomodoro && pomodoro status -c`) #[fg=colour57] #[fg=colour140,bg=colour57] #(uptime | sed -e "s/.*: //" -e "s/,//g") #[fg=colour135]#[fg=colour15,bg=colour135] %m/%d %H:%M '
 ```
 
 ### SSH read/write synchronization
