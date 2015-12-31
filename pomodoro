@@ -221,6 +221,28 @@ function emit_data () {
          '}'
 }
 
+function clear_counter () {
+    read_status
+
+    # handle the counter
+    if [ ! -z "${P_COUNT}${P_FIRST}" ]; then
+
+        if [ ! -z "$P_REMAINING" ]; then    # there was a timer active
+            if [ $P_REMAINING -le 0 ]; then # this timer was complete
+                P_COUNT=$(( P_COUNT + 1 ))
+            fi
+        fi
+    fi
+
+    if [ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]; then
+        "${POMODORO_REMOTE_CMD[@]}" clear 2>&1 > /dev/null
+    fi
+
+    P_START=""
+    P_DURATION=""
+    emit_data > $POMODORO_STATUS_FILE
+}
+
 ARG=${NONOPT_ARGS[0]}
 case "$ARG" in
     status)
@@ -265,6 +287,7 @@ case "$ARG" in
         ;;
 
     start)
+        clear_counter
 
         if  [ -z "$POMODORO_REMOTE_CMD" ] || \
             [ $(hostname) == "$POMODORO_NOSYNC_NAME" ] || \
@@ -276,32 +299,16 @@ case "$ARG" in
             if [ -z "$P_FIRST" ]; then
                 P_FIRST=$P_START
             fi
-            emit_data > $POMODORO_STATUS_FILE
         fi
+        emit_data > $POMODORO_STATUS_FILE
+
         tmux refresh-client -S
         exit 0
         ;;
 
     clear|reset|cancel)
-        read_status
+        clear_counter
 
-        # handle the counter
-        if [ ! -z "${P_COUNT}${P_FIRST}" ]; then
-
-            if [ ! -z "$P_REMAINING" ]; then    # there was a timer active
-                if [ $P_REMAINING -le 0 ]; then # this timer was complete
-                    P_COUNT=$(( P_COUNT + 1 ))
-                fi
-            fi
-        fi
-
-        if [ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]; then
-            "${POMODORO_REMOTE_CMD[@]}" clear 2>&1 > /dev/null
-        fi
-
-        P_START=""
-        P_DURATION=""
-        emit_data > $POMODORO_STATUS_FILE
         tmux refresh-client -S
         exit 0
         ;;
