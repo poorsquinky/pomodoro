@@ -103,7 +103,7 @@ while [ $# -gt 0 ]; do
             ;;
         -m|--minutes)
             if echo "$1" | grep -q -E '^[0-9]+$'; then
-                POMODORO_MIUTES=$1
+                POMODORO_MINUTES=$1
                 shift
             else
                 echo "Invalid number: '$1'"
