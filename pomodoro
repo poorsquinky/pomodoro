@@ -35,6 +35,8 @@ POMODORO_DATA_ONLY=0
 POMODORO_SSH=""
 POMODORO_REMOTE_CMD=""
 
+TMUX_REFRESH='tmux refresh-client -S'
+
 test -e "$HOME/.pomodororc" && . "$HOME/.pomodororc"
 
 if [ -z "$POMODORO_REMOTE_CMD" ] && [ ! -z "$POMODORO_SSH" ]; then
@@ -235,7 +237,7 @@ function clear_counter () {
     fi
 
     if [ ! -z "$POMODORO_SSH" ] && [ $(hostname) != "$POMODORO_NOSYNC_NAME" ]; then
-        "${POMODORO_REMOTE_CMD[@]}" clear 2>&1 > /dev/null
+        "${POMODORO_REMOTE_CMD[@]}" clear >/dev/null 2>&1
     fi
 
     P_START=""
@@ -291,7 +293,7 @@ case "$ARG" in
 
         if  [ -z "$POMODORO_REMOTE_CMD" ] || \
             [ $(hostname) == "$POMODORO_NOSYNC_NAME" ] || \
-            ! "${POMODORO_REMOTE_CMD[@]}" start -m ${POMODORO_MINUTES} 2>&1 > /dev/null
+            ! "${POMODORO_REMOTE_CMD[@]}" start -m ${POMODORO_MINUTES} >/dev/null 2>&1
         then
             read_status
             P_START=$NOW
@@ -302,14 +304,14 @@ case "$ARG" in
         fi
         emit_data > $POMODORO_STATUS_FILE
 
-        tmux refresh-client -S
+        $TMUX_REFRESH >/dev/null 2>&1
         exit 0
         ;;
 
     clear|reset|cancel)
         clear_counter
 
-        tmux refresh-client -S
+        $TMUX_REFRESH >/dev/null 2>&1
         exit 0
         ;;
 
@@ -318,11 +320,11 @@ case "$ARG" in
         P_COUNT=$(( P_COUNT + 1 ))
         if  [ -z "$POMODORO_REMOTE_CMD" ] || \
             [ $(hostname) == "$POMODORO_NOSYNC_NAME" ] || \
-            ! "${POMODORO_REMOTE_CMD[@]}" inc 2>&1 > /dev/null
+            ! "${POMODORO_REMOTE_CMD[@]}" inc >/dev/null 2>&1
         then
             emit_data > $POMODORO_STATUS_FILE
         fi
-        tmux refresh-client -S
+        $TMUX_REFRESH >/dev/null 2>&1
         ;;
 
     dec|decrement)
@@ -333,11 +335,11 @@ case "$ARG" in
         fi
         if  [ -z "$POMODORO_REMOTE_CMD" ] || \
             [ $(hostname) == "$POMODORO_NOSYNC_NAME" ] || \
-            ! "${POMODORO_REMOTE_CMD[@]}" dec 2>&1 > /dev/null
+            ! "${POMODORO_REMOTE_CMD[@]}" dec >/dev/null 2>&1
         then
             emit_data > $POMODORO_STATUS_FILE
         fi
-        tmux refresh-client -S
+        $TMUX_REFRESH >/dev/null 2>&1
         ;;
 
     *)
