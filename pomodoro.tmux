@@ -5,6 +5,8 @@ CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 pomodoro_status="#($CURRENT_DIR/scripts/pomodoro.sh status)"
 placeholder="\#{pomodoro_status}"
 
+source $CURRENT_DIR/scripts/shared.sh
+
 do_interpolation() {
 	local string="$1"
 	local interpolated="${string/$placeholder/$pomodoro_status}"
