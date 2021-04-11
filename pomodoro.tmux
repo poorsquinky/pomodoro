@@ -8,8 +8,8 @@ pomodoro_clear="#($CURRENT_DIR/scripts/pomodoro.sh clear)"
 
 placeholder="\#{pomodoro_status}"
 
-source $CURRENT_DIR/scripts/shared.sh
-source $CURRENT_DIR/scripts/variables.sh
+source "$CURRENT_DIR/scripts/shared.sh"
+source "$CURRENT_DIR/scripts/variables.sh"
 
 do_interpolation() {
 	local string="$1"
@@ -33,8 +33,8 @@ bind_tmux_key() {
 main() {
   update_tmux_option "status-left"
   update_tmux_option "status-right"
-  bind_tmux_key "$start_key" "$pomodoro_start"
-  bind_tmux_key "$clear_key" "$pomodoro_clear"
+  bind_tmux_key "$POMODORO_START_KEY" "$pomodoro_start"
+  bind_tmux_key "$POMODORO_CLEAR_KEY" "$pomodoro_clear"
 }
 
 main

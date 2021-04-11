@@ -20,24 +20,10 @@
 # Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
 # Boston, MA 02110-1301  USA
 
-# Set some defaults
-POMODORO_STATUS_FILE=/tmp/pom_$USER
-POMODORO_BANG="❗"
-POMODORO_SYMBOL="🍅"
-POMODORO_NBSP=" "
-POMODORO_MINUTES=25
-
-POMODORO_GRAPH_BLOCKS=( ▁ ▂ ▃ ▄ ▅ ▆ ▇ )
-POMODORO_DOT_BLOCKS=( ⠈ ⠨ ⠩ ⠭ )
-POMODORO_GRAPHICAL=0
-POMODORO_DATA_ONLY=0
-
-POMODORO_SSH=""
-POMODORO_REMOTE_CMD=""
-
 TMUX_REFRESH='tmux refresh-client -S'
 
-test -e "$HOME/.pomodororc" && . "$HOME/.pomodororc"
+CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source "$CURRENT_DIR/variables.sh"
 
 if [ -z "$POMODORO_REMOTE_CMD" ] && [ ! -z "$POMODORO_SSH" ]; then
     POMODORO_REMOTE_CMD=(ssh -q -o "ConnectTimeout 2" $POMODORO_SSH pomodoro)
@@ -270,6 +256,7 @@ case "$ARG" in
                         fi
                         echo -n "${POMODORO_NBSP} "
                     else
+                        eval "${POMODORO_HOOK}"
                         echo -n "${POMODORO_BANG}"
                         echo -n "${POMODORO_NBSP} "
                     fi
