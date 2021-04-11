@@ -75,7 +75,7 @@ set -g status-right '#[fg=colour07,bg=colour05] #{pomodoro_status}'
 
 ### Home directory config
 
-If you don't like putting the config file in tmux.conf, you could put the corresponding config in `.pomodororc` in your home direction and uncomment whatever you need.
+If you don't like putting config options in tmux.conf, you could put the corresponding config in `.pomodororc` in your home directory and uncomment whatever you need.
 
 ```sh
 cp scripts/pomodororc.example ~/
