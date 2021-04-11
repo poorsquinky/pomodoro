@@ -16,72 +16,69 @@ A terminal that supports Unicode is recommended.
 
 ## Installation
 
-* Clone this repository or download the ZIP and unpack it
-* Place the `pomodoro` script somewhere in your PATH (for example, `/usr/local/bin/`)
+Using [tpm](https://github.com/tmux-plugins/tpm) to install this plugin, put the following in .tmux.conf
+
+```tmux
+set-option -g @plugin 'poorsquinky/pomodoro'
+```
 
 ## Basic Configuration
 
 Add the status icon to your .tmux.conf.  This example works with tmux configurations that are shared between different hosts that may or may not have pomodoro installed:
 
 ```tmux
-set -g status-right '`test -e /usr/local/bin/pomodoro && pomodoro status`'
+set -g status-right '#{pomodoro_status}'
 ```
 
 ## Usage
 
-* `pomodoro start` - Start a timer
-* `pomodoro clear` - Reset the timer
-* `pomodoro status` - Display the current timer, if any
+* (prefix) a - Start a timer
+* (prefix) A - Reset the timer
 
 
 ## Optional/Advanced Configuration
 
 ### Hotkeys in `.tmux.conf`
-* (prefix) ctrl-p to start
-* (prefix) meta-p to clear
+
+Change bind-key to other keys
+
+* (prefix) t to start
+* (prefix) T to clear
 ```tmux
-bind-key -T prefix C-p run-shell 'test -e /usr/local/bin/pomodoro && pomodoro start'
-bind-key -T prefix M-p run-shell 'test -e /usr/local/bin/pomodoro && pomodoro clear'
+set-option -g @pomodoro_start_key 't'
+set-option -g @pomodoro_clear_key 'T'
 ```
 
 ### Disable Unicode
-* Add to .pomodororc:
-```bash
-POMODORO_BANG="!"
-POMODORO_SYMBOL="P"
-POMODORO_NBSP=" "
+```tmux
+set-option -g @pomodoro_bang '!'
+set-option -g @pomodoro_symbol 'P'
+set-option -g @pomodoro_nbsp ' '
 ```
 
 ### Set the timer length (minutes)
-```bash
-POMODORO_MINUTES=30
+```tmux
+set-option -g @pomodoro_minutes 30
 ```
 
 ### Use graphical meter instead of minute count
-```bash
-POMODORO_GRAPHICAL=1
+```tmux
+set-option -g @pomodoro_graphical 1
 ```
 
 ### Status blocks
 
 * A nice color status block:
 ```tmux
-set -g status-right '#[fg=colour07,bg=colour05] #(printf "%%-3s" `test -e /usr/local/bin/pomodoro && pomodoro status`)'
+set -g status-right '#[fg=colour07,bg=colour05] #{pomodoro_status}'
 ```
 
-* Status block including completed timer count:
-```tmux
-set -g status-right '#[fg=colour07,bg=colour05] #(printf "%%-3s" `test -e /usr/local/bin/pomodoro && pomodoro -c status`)'
-```
+### Home directory config
 
-* Status block with graphical display:
-```tmux
-set -g status-right '#[fg=colour07,bg=colour05] #(printf "%%-3s" `test -e /usr/local/bin/pomodoro && pomodoro -g status`)'
-```
+If you don't like putting config options in tmux.conf, you could put the corresponding config in `.pomodororc` in your home directory and uncomment whatever you need.
 
-* Full disclosure: the status-right that I personally use, with a clock and host load average.  Requires a 256-color terminal and a [powerline](https://github.com/powerline/fonts) or [nerd](https://github.com/ryanoasis/nerd-fonts) font:
-```tmux
-set -g status-right '#[fg=colour54] #[fg=colour205,bg=colour54] #(printf "%%-3s" `test -e /usr/local/bin/pomodoro && pomodoro status -c`) #[fg=colour57] #[fg=colour140,bg=colour57] #(uptime | sed -e "s/.*: //" -e "s/,//g") #[fg=colour135]#[fg=colour15,bg=colour135] %m/%d %H:%M '
+```sh
+cp scripts/pomodororc.example ~/
 ```
 
 ### SSH read/write synchronization
@@ -120,6 +117,5 @@ POMODORO_STATUS_URL=http://host.example.com/~user/pom
 
 In future revisions of this, I would like to see:
 
-* A simple installer
 * A lightweight REST API that can replace SSH synchronization, plus [Docker](https://github.com/docker/docker) containers for a simple low-mess API installation
 
