@@ -19,7 +19,7 @@ A terminal that supports Unicode is recommended.
 Using [tpm](https://github.com/tmux-plugins/tpm) to install this plugin, put the following in .tmux.conf
 
 ```tmux
-set-option -g @plugin 'ytian81/tmux-pomodoro'
+set-option -g @plugin 'poorsquinky/pomodoro'
 ```
 
 ## Basic Configuration
