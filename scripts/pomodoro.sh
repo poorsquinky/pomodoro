@@ -25,6 +25,8 @@ TMUX_REFRESH='tmux refresh-client -S'
 CURRENT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "$CURRENT_DIR/variables.sh"
 
+test -e "$HOME/.pomodororc" && . "$HOME/.pomodororc"
+
 if [ -z "$POMODORO_REMOTE_CMD" ] && [ ! -z "$POMODORO_SSH" ]; then
     POMODORO_REMOTE_CMD=(ssh -q -o "ConnectTimeout 2" $POMODORO_SSH pomodoro)
 fi

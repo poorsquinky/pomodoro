@@ -7,27 +7,27 @@
 # POMODORO_STATUS_FILE=/tmp/pom_$USER
 
 # CHange the timer duration (minutes)
-#POMODORO_MINUTES=25
+# POMODORO_MINUTES=25
 
 # Uncomment these if you have trouble with Unicode
-#POMODORO_BANG="!"
-#POMODORO_SYMBOL="P"
-#POMODORO_NBSP=" "
+# POMODORO_BANG="!"
+# POMODORO_SYMBOL="P"
+# POMODORO_NBSP=" "
 
 # Enable SSH-based synchronization server
-#POMODORO_SSH=server.example.com
+# POMODORO_SSH=server.example.com
 
 # If the local hostname is this, don't perform sync
-#POMODORO_NOSYNC_NAME=examplehost
+# POMODORO_NOSYNC_NAME=examplehost
 
 # HTTP read-only synchronization
-#POMODORO_STATUS_URL=http://host.example.com/~user/pom
+# POMODORO_STATUS_URL=http://host.example.com/~user/pom
 
 # Enable graphical mode
 #POMODORO_GRAPHICAL=0
 # Change the graph from vertical to horizontal
-#POMODORO_GRAPH_BLOCKS=( ▏ ▎ ▍ ▌ ▋ ▊ ▉ )
+# POMODORO_GRAPH_BLOCKS=( ▏ ▎ ▍ ▌ ▋ ▊ ▉ )
 
 # Uncomment if unicode braille dots don't look right in your terminal
-#POMODORO_DOT_BLOCKS=( ▘ ▀ ▛ ▇ )
+# POMODORO_DOT_BLOCKS=( ▘ ▀ ▛ ▇ )
 

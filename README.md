@@ -15,6 +15,9 @@ Here is a lovely screenshot:
 A terminal that supports Unicode is recommended.
 
 ## Installation
+
+Using [tpm](https://github.com/tmux-plugins/tpm) to install this plugin, put the following in .tmux.conf
+
 ```tmux
 set-option -g @plugin 'ytian81/tmux-pomodoro'
 ```
@@ -70,6 +73,13 @@ set-option -g @pomodoro_graphical 1
 set -g status-right '#[fg=colour07,bg=colour05] #{pomodoro_status}'
 ```
 
+### Home directory config
+
+If you don't like putting the config file in tmux.conf, you could put the corresponding config in `.pomodororc` in your home direction and uncomment whatever you need.
+
+```sh
+cp scripts/pomodororc.example ~/
+```
 
 ### SSH read/write synchronization
 
