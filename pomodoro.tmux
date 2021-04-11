@@ -27,8 +27,6 @@ update_tmux_option() {
 bind_tmux_key() {
     local key="$1"
     local command="$2"
-    echo $key
-    echo $command
     tmux bind-key "$key" run-shell "$command"
 }
 
