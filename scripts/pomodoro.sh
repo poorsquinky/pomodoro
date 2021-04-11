@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # pomodoro - Start and run a pomodoro timer for use in tmux status line and elsewhere
 
